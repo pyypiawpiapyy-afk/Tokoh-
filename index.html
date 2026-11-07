@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toko UMKM</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{--bg:#fbf8f6;--card:#fff;--ink:#3a1f17;--mut:#8a7b73;--line:#ece3dd;--br:#5c2e22;--br2:#8a5a4c;--pk:#f7e3dd;--pk2:#f1d3ca;--ok:#2f8f5b}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 "Poppins","Segoe UI",system-ui,sans-serif}
+.w{max-width:1040px;margin:0 auto;padding:0 18px}
+nav{display:flex;align-items:center;gap:14px;padding:14px 0;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;margin-right:auto}
+.logo i{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9a8a60,#3f3a22)}
+nav a{color:var(--ink);text-decoration:none;font-size:14px;cursor:pointer}
+.b{border:0;border-radius:999px;padding:11px 20px;font:inherit;font-weight:600;font-size:14px;background:var(--br);color:#fff;cursor:pointer}
+.b.o{background:#fff;color:var(--ink);border:1px solid var(--line)}.b.s{padding:8px 14px;font-size:13px}.b.d{background:none;color:#c0392b}
+.ic{position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:16px;cursor:pointer}
+.ic em{position:absolute;top:-4px;right:-4px;background:var(--br);color:#fff;border-radius:99px;font-size:11px;font-style:normal;padding:1px 6px}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center;padding:30px 0 10px}
+.hero h1{font-size:clamp(44px,9vw,86px);line-height:1;margin:0;font-weight:900;background:linear-gradient(90deg,#8a4b3c,#4a2318);-webkit-background-clip:text;background-clip:text;color:transparent;word-break:break-word}
+.hero h2{font-size:clamp(22px,4vw,34px);margin:10px 0 8px}.hero p{color:var(--mut);max-width:420px;margin:0 0 18px;font-size:14px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.st{display:flex;gap:28px;margin-top:26px}.st b{display:block;font-size:24px}.st span{font-size:12px;color:var(--mut)}
+.hb{aspect-ratio:1;border-radius:34px;background:linear-gradient(135deg,var(--pk),var(--pk2));display:grid;place-items:center;font-size:clamp(90px,22vw,190px);transform:rotate(6deg);overflow:hidden;box-shadow:0 30px 60px -30px rgba(92,46,34,.45)}
+.hb img{width:100%;height:100%;object-fit:cover}
+.band{margin:40px -40px 30px;background:var(--br);color:#fff;padding:12px 0;transform:rotate(-2deg);white-space:nowrap;overflow:hidden;font-weight:700;letter-spacing:.5em;font-size:13px}
+.sec{padding:34px 0}.sec h3{text-align:center;font-size:26px;margin:0 0 6px}.sec .sub{text-align:center;color:var(--mut);font-size:14px;margin:0 0 24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px;position:relative;display:flex;flex-direction:column}
+.card:hover{box-shadow:0 18px 40px -22px rgba(92,46,34,.5)}
+.ph{aspect-ratio:1;border-radius:16px;background:var(--pk);display:grid;place-items:center;font-size:64px;overflow:hidden;position:relative}
+.ph img{width:100%;height:100%;object-fit:cover}.ph .x{position:absolute;inset:0;background:rgba(58,31,23,.55);color:#fff;display:grid;place-items:center;font-weight:700}
+.tg{position:absolute;top:10px;right:10px;background:var(--br);color:#fff;border-radius:10px;padding:2px 9px;font-size:12px;font-weight:700;z-index:2}
+.ct{font-size:11px;color:var(--mut);margin-top:10px}.nm{font-weight:700;line-height:1.25}.ds{font-size:12px;color:var(--mut)}
+.pr{font-size:19px;font-weight:700;margin:6px 0}.pr s{font-size:12px;color:var(--mut);font-weight:400;margin-right:6px}
+.add{margin-top:auto;border:0;background:none;color:var(--ink);font:inherit;font-size:14px;text-align:left;padding:4px 0;cursor:pointer;font-weight:600}
+.qty{margin-top:auto;display:flex;align-items:center;justify-content:space-between;background:var(--pk);border-radius:99px}.qty button{border:0;background:none;width:38px;height:34px;font-size:18px;cursor:pointer;color:var(--ink)}
+.tabs{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}.tabs a{cursor:pointer;color:var(--mut);padding-bottom:6px;font-size:15px}.tabs a.on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--br)}
+.cta{border-radius:26px;background:linear-gradient(100deg,var(--pk),var(--pk2));padding:34px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin:10px 0}.cta h3{margin:0 0 14px;text-align:left;font-size:28px}.cta .e{font-size:90px}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}.feat div{display:flex;gap:12px}.feat i{font-style:normal;width:50px;height:50px;border-radius:50%;background:var(--pk);display:grid;place-items:center;font-size:22px;flex:none}.feat b{display:block}.feat span{font-size:12px;color:var(--mut)}
+footer{background:#2f1a14;color:#e9dcd5;margin-top:50px;padding:34px 0;font-size:14px}footer h4{margin:0 0 8px;color:#fff}footer .g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.ov{position:fixed;inset:0;background:rgba(40,20,14,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.ov>div{background:var(--bg);width:100%;max-width:560px;max-height:90%;overflow:auto;border-radius:24px 24px 0 0;padding:22px}
+@media(min-width:700px){.ov{align-items:center}.ov>div{border-radius:24px}}
+.ov h2{margin:0 0 14px}label{display:block;font-weight:600;font-size:13px;margin:12px 0 5px}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:12px;padding:10px 12px;font:inherit}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.row small{color:var(--mut)}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:18px;padding:10px 0}
+.opt{display:grid;gap:8px}.opt label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff;margin:0;font-weight:500}.opt input{width:auto;margin-top:4px}
+.adm h2{font-size:24px}.at{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.at button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font:inherit;cursor:pointer}.at .on{background:var(--br);color:#fff}
+.bx{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.kp div{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}.kp span{font-size:12px;color:var(--mut)}.kp b{display:block;font-size:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;z-index:50;font-size:14px}
+.demo{background:var(--pk2);text-align:center;font-size:12px;padding:6px}
+@media(max-width:700px){.hero{grid-template-columns:1fr}.hb{max-width:300px;margin:0 auto}.band{margin:30px -20px}}
+</style>
+</head>
+<body>
+<div id="app"></div><div id="ov"></div><div id="tt"></div>
+<script>
+/* ===== PENGATURAN (isi setelah membuat proyek Firebase) ===== */
+const FB={apiKey:"",authDomain:"",projectId:"",appId:""};
+const ADMIN_EMAIL="";   // email Google milik admin
+/* ============================================================ */
+const LIVE=!!FB.apiKey;let fdb,fauth;
+if(LIVE){firebase.initializeApp(FB);fdb=firebase.firestore();fauth=firebase.auth()}
+const S={set:{name:'Warung Bu Sari',tag:'Makanan dan minuman rumahan, dibuat segar setiap hari',wa:'',addr:'',hours:'08.00 – 20.00',ongkir:8000},prods:[],orders:[],exps:[],user:null,cart:{},tab:'Semua',view:'shop',adm:'produk',per:'7'};
+const $=s=>document.querySelector(s);const rp=n=>'Rp'+Math.round(n||0).toLocaleString('id-ID');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast=t=>{$('#tt').innerHTML=`<div class="toast">${esc(t)}</div>`;setTimeout(()=>$('#tt').innerHTML='',2400)};
+const LS=k=>{try{return JSON.parse(localStorage.getItem('u_'+k))}catch(e){return null}};
+const isAdmin=()=>LIVE?!!(S.user&&S.user.email===ADMIN_EMAIL):!!S.user;
+async function list(c){if(LIVE){const s=await fdb.collection(c).get();return s.docs.map(d=>({...d.data(),id:d.id}))}return LS(c)||[]}
+async function put(c,o){const id=o.id||'x'+Date.now(),r={...o};delete r.id;
+ if(LIVE)await fdb.collection(c).doc(id).set(r);else{const a=await list(c),i=a.findIndex(x=>x.id===id),n={...r,id};i<0?a.push(n):a[i]=n;localStorage.setItem('u_'+c,JSON.stringify(a))}return id}
+async function rm(c,id){if(LIVE)await fdb.collection(c).doc(id).delete();else localStorage.setItem('u_'+c,JSON.stringify((await list(c)).filter(x=>x.id!==id)))}
+async function load(){
+ try{S.prods=await list('products');
+  if(LIVE){const d=await fdb.doc('settings/main').get();if(d.exists)Object.assign(S.set,d.data())}else{const d=LS('settings');if(d)Object.assign(S.set,d)}
+  if(!S.prods.length&&!LIVE)S.prods=demoProds();
+  if(isAdmin()){S.orders=(await list('orders')).sort((a,b)=>b.ts-a.ts);S.exps=(await list('expenses')).sort((a,b)=>b.ts-a.ts)}
+ }catch(e){toast('Gagal memuat data: '+e.message)}render()}
+function demoProds(){return[['Kue Lapis Legit',35000,'Kue','Loyang kecil, 12 potong','🍰',10],['Pisang Goreng Madu',15000,'Gorengan','Isi 8 potong, renyah','🍌',0],['Es Teh Jumbo',8000,'Minuman','Gula bisa diatur','🧋',0],['Nasi Kuning Komplit',20000,'Nasi','Ayam suwir, telur, sambal','🍛',20],['Kopi Susu Gula Aren',18000,'Minuman','Cup 300 ml','☕',0],['Risoles Mayo',12000,'Gorengan','Isi 5 buah','🥟',0]].map((a,i)=>({id:'d'+i,name:a[0],price:a[1],cat:a[2],desc:a[3],img:a[4],disc:a[5],out:false,ts:Date.now()-i}))}
+const eff=p=>p.disc?Math.round(p.price*(100-p.disc)/100):p.price;
+const im=p=>p.img&&p.img.startsWith('data:')?`<img src="${p.img}" alt="">`:esc(p.img||'🛍️');
+const cnt=()=>Object.values(S.cart).reduce((a,b)=>a+b,0);
+const sub=()=>S.prods.reduce((a,p)=>a+(S.cart[p.id]||0)*eff(p),0);
+
+/* ===== AUTH ===== */
+function login(){if(LIVE)fauth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>toast('Login gagal: '+e.message));else{S.user={email:'demo@admin'};load()}}
+function logout(){if(LIVE)fauth.signOut();else{S.user=null;S.view='shop';load()}}
+if(LIVE)fauth.onAuthStateChanged(u=>{S.user=u;if(u&&u.email!==ADMIN_EMAIL){toast('Akun ini bukan admin');}load()});
+
+/* ===== TAMPILAN TOKO ===== */
+function render(){$('#app').innerHTML=S.view==='admin'&&isAdmin()?adminV():shopV()}
+function card(p){const q=S.cart[p.id]||0;
+ return `<div class="card">${p.disc?`<div class="tg">-${p.disc}%</div>`:''}<div class="ph">${im(p)}${p.out?'<div class="x">Habis</div>':''}</div><div class="ct">${esc(p.cat)}</div><div class="nm">${esc(p.name)}</div><div class="ds">${esc(p.desc)}</div><div class="pr">${p.disc?`<s>${rp(p.price)}</s>`:''}${rp(eff(p))}</div>`+
+ (p.out?'':q?`<div class="qty"><button onclick="chg('${p.id}',-1)" aria-label="Kurangi">−</button><b>${q}</b><button onclick="chg('${p.id}',1)" aria-label="Tambah">+</button></div>`:`<button class="add" onclick="chg('${p.id}',1)">Tambah ke keranjang →</button>`)+`</div>`}
+function shopV(){
+ const cats=['Semua',...new Set(S.prods.map(p=>p.cat).filter(Boolean))];if(!cats.includes(S.tab))S.tab='Semua';
+ const all=S.prods.filter(p=>S.tab==='Semua'||p.cat===S.tab),neu=[...S.prods].sort((a,b)=>(b.ts||0)-(a.ts||0)).slice(0,4),f=S.prods[0];
+ const bn=(S.set.name+' ').repeat(10).split('').join(' ');
+ return (LIVE?'':'<div class="demo">Mode contoh: data tersimpan di HP ini saja. Isi pengaturan Firebase agar data dipakai bersama.</div>')+
+ `<div class="w"><nav><div class="logo"><i></i>${esc(S.set.name)}</div><a href="#menu">Menu</a><a href="#promo">Promo</a><a href="#kontak">Kontak</a>
+ ${isAdmin()?`<button class="b o s" onclick="S.view='admin';load()">Panel admin</button><button class="b s" onclick="logout()">Keluar</button>`:`<button class="b s" onclick="login()">Masuk admin (Google)</button>`}
+ <button class="ic" onclick="openCart()" aria-label="Keranjang">🛒${cnt()?`<em>${cnt()}</em>`:''}</button></nav>
+ <section class="hero"><div><h1>${esc(S.set.name.toUpperCase())}</h1><h2>Pesan online, langsung diantar</h2><p>${esc(S.set.tag)}</p><div class="btns"><a href="#menu" class="b" style="text-decoration:none">Lihat menu →</a><button class="b o" onclick="openCart()">Pesan antar</button></div>
+ <div class="st"><div><b>${S.prods.length}+</b><span>Pilihan menu</span></div><div><b>${esc(S.set.hours)}</b><span>Jam buka</span></div></div></div><div class="hb">${f?im(f):'🛍️'}</div></section></div>
+ <div style="overflow:hidden"><div class="band">${esc(bn.slice(0,150))}</div></div>
+ <div class="w"><section class="sec"><h3>Menu terbaru</h3><p class="sub">Pilihan segar yang baru kami tambahkan.</p><div class="grid">${neu.map(card).join('')}</div></section>
+ <div class="cta"><div><h3>Rumah jauh?<br>Tetap bisa pesan.</h3><button class="b" onclick="openCart()">Pesan sekarang →</button></div><div class="e">🛵</div></div>
+ <section class="sec" id="menu"><h3 id="promo">Semua menu</h3><p class="sub">Ketuk kategori untuk menyaring. Harga coret berarti sedang promo.</p><div class="tabs">${cats.map(c=>`<a class="${c===S.tab?'on':''}" onclick="S.tab=this.dataset.c;render()" data-c="${esc(c)}">${esc(c)}</a>`).join('')}</div>
+ ${all.length?`<div class="grid">${all.map(card).join('')}</div>`:'<p class="sub">Belum ada menu.</p>'}</section>
+ <section class="sec"><h3>Kenapa pesan di sini</h3><p class="sub">Kami jaga kualitas di setiap pesanan.</p><div class="feat"><div><i>🍳</i><p><b>Dibuat saat dipesan</b><span>Segar, tidak disimpan lama.</span></p></div><div><i>🛵</i><p><b>Antar sampai rumah</b><span>Dekat atau jauh, kami carikan caranya.</span></p></div><div><i>💬</i><p><b>Konfirmasi lewat WhatsApp</b><span>Mudah dan jelas.</span></p></div><div><i>💯</i><p><b>Harga jujur</b><span>Promo tertera di setiap menu.</span></p></div></div></section></div>
+ <footer id="kontak"><div class="w g"><div><h4>${esc(S.set.name)}</h4>${esc(S.set.tag)}</div><div><h4>Alamat</h4>${esc(S.set.addr||'Belum diatur')}<br>Buka ${esc(S.set.hours)}</div><div><h4>Kontak</h4>WhatsApp ${esc(S.set.wa||'belum diatur')}</div></div></footer>`}
+function chg(id,d){S.cart[id]=Math.max(0,(S.cart[id]||0)+d);if(!S.cart[id])delete S.cart[id];render();if($('#ov').innerHTML)openCart()}
+const ov=h=>$('#ov').innerHTML=`<div class="ov" onclick="if(event.target===this)cl()"><div>${h}</div></div>`;const cl=()=>$('#ov').innerHTML='';
+
+/* ===== KERANJANG & PEMESANAN ===== */
+let mode='ambil';
+function openCart(){const its=S.prods.filter(p=>S.cart[p.id]);if(!its.length){cl();toast('Keranjang masih kosong');return}
+ let c={};try{c=JSON.parse(sessionStorage.getItem('c')||'{}')}catch(e){}
+ const og=mode==='antar'?+S.set.ongkir||0:0;
+ ov(`<h2>Pesananmu</h2>${its.map(p=>`<div class="row"><div><b>${esc(p.name)}</b><br><small>${rp(eff(p))}</small></div><div class="qty" style="width:110px;margin:0"><button onclick="chg('${p.id}',-1)">−</button><b>${S.cart[p.id]}</b><button onclick="chg('${p.id}',1)">+</button></div></div>`).join('')}
+ <label>Cara terima pesanan</label><div class="opt">
+ <label><input type="radio" name="m" ${mode==='ambil'?'checked':''} onchange="mode='ambil';openCart()"><span><b>Ambil di tempat</b><br><small>Gratis</small></span></label>
+ <label><input type="radio" name="m" ${mode==='antar'?'checked':''} onchange="mode='antar';openCart()"><span><b>Antar ke rumah (dekat)</b><br><small>Ongkir ${rp(S.set.ongkir)}</small></span></label>
+ <label><input type="radio" name="m" ${mode==='jauh'?'checked':''} onchange="mode='jauh';openCart()"><span><b>Kirim jauh (ekspedisi/kurir)</b><br><small>Ongkir dikonfirmasi lewat WhatsApp</small></span></label></div>
+ <div class="tot"><span>${mode==='jauh'?'Subtotal':'Total'}</span><span>${rp(sub()+og)}</span></div>
+ <label>Nama</label><input id="cn" value="${esc(c.n)}"><label>Nomor HP</label><input id="cp" type="tel" value="${esc(c.p)}">
+ ${mode!=='ambil'?`<label>Alamat lengkap</label><textarea id="ca" rows="3" placeholder="Jalan, RT/RW, kelurahan, kota, kode pos">${esc(c.a)}</textarea>`:''}
+ <label>Catatan</label><input id="cc"><div style="display:flex;gap:8px;margin-top:16px"><button class="b o" onclick="cl()">Tutup</button><button class="b" style="flex:1" onclick="order()">Pesan via WhatsApp</button></div>`)}
+async function order(){
+ const n=$('#cn').value.trim(),p=$('#cp').value.trim(),a=$('#ca')?$('#ca').value.trim():'',c=$('#cc').value.trim();
+ if(!n||!p||(mode!=='ambil'&&!a))return toast('Lengkapi nama, HP, dan alamat');
+ try{sessionStorage.setItem('c',JSON.stringify({n,p,a}))}catch(e){}
+ const its=S.prods.filter(x=>S.cart[x.id]).map(x=>({id:x.id,name:x.name,price:eff(x),qty:S.cart[x.id]})),sb=sub(),og=mode==='antar'?+S.set.ongkir||0:0;
+ const o={items:its,sub:sb,ongkir:og,total:sb+og,mode,name:n,phone:p,addr:a,note:c,status:'baru',ts:Date.now()};
+ try{await put('orders',o)}catch(e){}
+ let num=(S.set.wa||'').replace(/\D/g,'');if(num.startsWith('0'))num='62'+num.slice(1);
+ if(!num)return toast('Nomor WhatsApp toko belum diatur admin');
+ const L={ambil:'Ambil di tempat',antar:'Antar ke rumah',jauh:'Kirim jauh (ongkir mohon dikonfirmasi)'}[mode];
+ const t=`Halo ${S.set.name}, saya mau pesan:\n\n${its.map(i=>`- ${i.qty}x ${i.name} (${rp(i.price*i.qty)})`).join('\n')}\n\nSubtotal: ${rp(sb)}${og?`\nOngkir: ${rp(og)}`:''}\nTotal: ${rp(o.total)}\n\nCara terima: ${L}\nNama: ${n}\nHP: ${p}${a?'\nAlamat: '+a:''}${c?'\nCatatan: '+c:''}`;
+ S.cart={};cl();render();window.open('https://wa.me/'+num+'?text='+encodeURIComponent(t),'_blank')}
+
+/* ===== PANEL ADMIN ===== */
+function adminV(){
+ const T=['produk','pesanan','laporan','pengaturan'];
+ return `<div class="w adm"><nav><div class="logo"><i></i>Panel admin</div><button class="b o s" onclick="S.view='shop';render()">Lihat toko</button><button class="b s" onclick="logout()">Keluar</button></nav>
+ <div class="at">${T.map(t=>`<button class="${S.adm===t?'on':''}" onclick="S.adm='${t}';render()">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>${admTab()}</div>`}
+function admTab(){const a=S.adm;
+ if(a==='produk')return `<button class="b" onclick="editP()">+ Tambah produk</button><div style="margin-top:14px">${S.prods.map(p=>`<div class="bx row"><div style="display:flex;gap:12px;align-items:center"><div class="ph" style="width:56px;font-size:28px;flex:none">${im(p)}</div><div><b>${esc(p.name)}</b><br><small>${esc(p.cat)} · ${rp(p.price)}${p.disc?' · diskon '+p.disc+'%':''}${p.out?' · HABIS':''}</small></div></div><button class="b o s" onclick="editP('${p.id}')">Ubah</button></div>`).join('')||'<p>Belum ada produk.</p>'}</div>`;
+ if(a==='pesanan'){const L={ambil:'Ambil',antar:'Antar',jauh:'Kirim jauh'};return S.orders.map(o=>`<div class="bx"><div class="row" style="border:0"><b>${esc(o.name)} · ${rp(o.total)}</b><select style="width:auto" onchange="setSt('${o.id}',this.value)">${['baru','diproses','dikirim','selesai','batal'].map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></div><small>${new Date(o.ts).toLocaleString('id-ID')} · ${L[o.mode]||''} · ${esc(o.phone)}</small><br>${(o.items||[]).map(i=>`${i.qty}x ${esc(i.name)}`).join(', ')}${o.addr?`<br><small>${esc(o.addr)}</small>`:''}</div>`).join('')||'<p>Belum ada pesanan.</p>'}
+ if(a==='laporan')return report();
+ const s=S.set;return `<div class="bx"><label>Nama toko</label><input id="sn" value="${esc(s.name)}"><label>Slogan</label><input id="st" value="${esc(s.tag)}"><label>Nomor WhatsApp pesanan</label><input id="sw" value="${esc(s.wa)}" placeholder="08123456789"><label>Alamat toko</label><input id="sa" value="${esc(s.addr)}"><label>Jam buka</label><input id="sh" value="${esc(s.hours)}"><label>Ongkir antar dekat (Rp)</label><input id="so" type="number" value="${esc(s.ongkir)}"><br><br><button class="b" onclick="saveSet()">Simpan</button></div>`}
+function report(){
+ const d=S.per==='1'?1:+S.per,t0=S.per==='1'?new Date().setHours(0,0,0,0):Date.now()-d*864e5;
+ const os=S.orders.filter(o=>o.ts>=t0&&o.status==='selesai'),ex=S.exps.filter(e=>e.ts>=t0);
+ const om=os.reduce((a,o)=>a+o.total,0),pe=ex.reduce((a,e)=>a+e.amount,0),m={};
+ os.forEach(o=>(o.items||[]).forEach(i=>m[i.name]=(m[i.name]||0)+i.qty));const top=Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ return `<div class="at">${[['1','Hari ini'],['7','7 hari'],['30','30 hari']].map(([v,l])=>`<button class="${S.per===v?'on':''}" onclick="S.per='${v}';render()">${l}</button>`).join('')}</div>
+ <div class="kp"><div><span>Pemasukan (pesanan selesai)</span><b>${rp(om)}</b></div><div><span>Pengeluaran</span><b>${rp(pe)}</b></div><div><span>Laba bersih</span><b style="color:${om-pe<0?'#c0392b':'var(--ok)'}">${rp(om-pe)}</b></div><div><span>Jumlah pesanan</span><b>${os.length}</b></div></div>
+ <div class="bx" style="margin-top:12px"><b>Produk terlaris</b>${top.map(([n,q])=>`<div class="row"><span>${esc(n)}</span><b>${q}</b></div>`).join('')||'<br><small>Belum ada data</small>'}</div>
+ <div class="bx"><b>Catat pengeluaran</b><label>Keterangan</label><input id="el" placeholder="Bahan, gas, kemasan..."><label>Jumlah (Rp)</label><input id="ea" type="number" inputmode="numeric"><br><br><button class="b s" onclick="addEx()">Simpan pengeluaran</button>
+ ${ex.map(e=>`<div class="row"><span>${esc(e.label)}<br><small>${new Date(e.ts).toLocaleDateString('id-ID')}</small></span><span>${rp(e.amount)} <button class="b d s" onclick="delEx('${e.id}')">Hapus</button></span></div>`).join('')}</div>`}
+async function addEx(){const l=$('#el').value.trim(),a=+$('#ea').value;if(!l||!a)return toast('Isi keterangan dan jumlah');await put('expenses',{label:l,amount:a,ts:Date.now()});load()}
+async function delEx(id){await rm('expenses',id);load()}
+async function setSt(id,s){const o=S.orders.find(x=>x.id===id);o.status=s;await put('orders',o);toast('Status diperbarui');render()}
+async function saveSet(){const s={name:$('#sn').value.trim()||'Toko Saya',tag:$('#st').value.trim(),wa:$('#sw').value.trim(),addr:$('#sa').value.trim(),hours:$('#sh').value.trim(),ongkir:+$('#so').value||0};
+ try{if(LIVE)await fdb.doc('settings/main').set(s);else localStorage.setItem('u_settings',JSON.stringify(s));Object.assign(S.set,s);toast('Tersimpan');render()}catch(e){toast('Gagal: '+e.message)}}
+let timg=null;
+function editP(id){const p=S.prods.find(x=>x.id===id)||{name:'',price:'',cat:'',desc:'',img:'🛍️',disc:0,out:false};timg=p.img;
+ ov(`<h2>${id?'Ubah produk':'Produk baru'}</h2><label>Nama</label><input id="pn" value="${esc(p.name)}"><label>Harga (Rp)</label><input id="pp" type="number" value="${esc(p.price)}"><label>Diskon (%)</label><input id="pd" type="number" value="${esc(p.disc||0)}"><label>Kategori</label><input id="pc" value="${esc(p.cat)}"><label>Deskripsi</label><input id="px" value="${esc(p.desc)}"><label>Foto produk</label><input type="file" accept="image/*" onchange="pimg(this.files[0])"><label>atau emoji</label><input id="pe" value="${p.img&&p.img.startsWith('data:')?'':esc(p.img)}"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="po" style="width:auto" ${p.out?'checked':''}> Stok habis</label>
+ <div style="display:flex;gap:8px;margin-top:16px">${id?`<button class="b d" onclick="delP('${id}')">Hapus</button>`:''}<button class="b o" onclick="cl()">Batal</button><button class="b" style="flex:1" onclick="saveP('${id||''}')">Simpan</button></div>`)}
+function pimg(f){if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=500/Math.max(i.width,i.height,500),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);timg=c.toDataURL('image/jpeg',.7);toast('Foto siap')};i.src=r.result};r.readAsDataURL(f)}
+async function saveP(id){const n=$('#pn').value.trim(),pr=+$('#pp').value;if(!n||!pr)return toast('Isi nama dan harga');const em=$('#pe').value.trim();
+ const o={name:n,price:pr,disc:Math.min(90,+$('#pd').value||0),cat:$('#pc').value.trim()||'Lainnya',desc:$('#px').value.trim(),img:(timg&&timg.startsWith('data:'))?timg:(em||'🛍️'),out:$('#po').checked,ts:Date.now()};
+ try{await put('products',id?{...S.prods.find(x=>x.id===id),...o,ts:S.prods.find(x=>x.id===id).ts}:o);cl();load()}catch(e){toast('Gagal menyimpan: '+e.message)}}
+async function delP(id){if(!confirm('Hapus produk ini?'))return;await rm('products',id);cl();load()}
+load();
+</script>
+</body>
+</html>
